@@ -1,0 +1,20 @@
+public class livro extends publicacao {
+    private String autor;
+    private int numeroPaginas;
+
+    public livro(String id, String nome, String isbn, int anoPublicacao, String autor, int numeroPaginas) {
+        super(id, nome, isbn, anoPublicacao);
+        this.autor = autor;
+        this.numeroPaginas = numeroPaginas;
+    }
+
+    @Override
+    public double calcularPreco() {
+        return numeroPaginas * 0.5;
+    }
+
+    @Override
+    public String toString() {
+        return "Livro: " + getNome() + ", Autor: " + autor;
+    }
+}
