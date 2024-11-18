@@ -1,0 +1,29 @@
+public class revista extends publicacao {
+    private String editora;
+    private int edicao;
+
+    public revista(String id, String nome, String isbn, int anoPublicacao, String editora, int edicao) {
+        super(id, nome, isbn, anoPublicacao);
+        this.editora = editora;
+        this.edicao = edicao;
+    }
+
+    @Override
+    public double calcularPreco() {
+        return edicao * 2.0;
+    }
+
+    @Override
+    public String toString() {
+        return "Revista: " + getNome() + ", Edição: " + edicao;
+    }
+
+    // Getters
+    public String getEditora() {
+        return editora;
+    }
+
+    public int getEdicao() {
+        return edicao;
+    }
+}
