@@ -1,0 +1,35 @@
+// EntidadeBiblioteca.java
+import java.util.Objects;
+
+public abstract class biblioteca {
+    private String id;
+    private String nome;
+
+    public biblioteca(String id, String nome) {
+        this.id = id;
+        this.nome = nome;
+    }
+
+    public abstract String gerarRelatorio();
+    public abstract void validar() throws dadosInvalidos;
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        biblioteca that = (biblioteca) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+}
+
+
