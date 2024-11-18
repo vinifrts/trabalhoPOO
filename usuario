@@ -1,0 +1,67 @@
+// Publicacao.java
+import java.util.Arrays;
+import java.time.LocalDate;
+
+public abstract class publicacao extends biblioteca implements Emprestavel, Pesquisavel {
+    private String isbn;
+    private int anoPublicacao;
+    private boolean disponivel;
+
+
+    public publicacao(String id, String nome, String isbn, int anoPublicacao) {
+        super(id, nome);
+        this.isbn = isbn;
+        this.anoPublicacao = anoPublicacao;
+        this.disponivel = true;
+    }
+
+    @Override
+    public boolean emprestar() throws limiteEmprestimo {
+        if (!disponivel) {
+            throw new limiteEmprestimo("Publicação não disponível para empréstimo");
+        }
+        disponivel = false;
+        return true;
+    }
+
+    @Override
+    public boolean devolver() {
+        disponivel = true;
+        return true;
+    }
+
+    @Override
+    public boolean verificarDisponibilidade() {
+        return disponivel;
+    }
+
+    @Override
+    public String gerarRelatorio() {
+        return "Publicação: " + getNome() + ", ISBN: " + isbn;
+    }
+
+    @Override
+    public void validar() throws dadosInvalidos {
+        if (isbn == null || isbn.isEmpty()) {
+            throw new dadosInvalidos("ISBN inválido");
+        }
+    }
+
+    @Override
+    public boolean realizarPesquisa(String termoBusca) {
+        return getNome().toLowerCase().contains(termoBusca.toLowerCase());
+    }
+
+    @Override
+    public String obterDetalhesCompletos() {
+        return String.format(
+                "Nome: %s, ISBN: %s, Ano: %d, Disponível: %s",
+                getNome(),
+                isbn,
+                anoPublicacao,
+                disponivel
+        );
+    }
+
+    public abstract double calcularPreco();
+}
