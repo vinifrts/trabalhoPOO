@@ -1,0 +1,220 @@
+import java.io.*;
+import java.util.*;
+
+public class gerenciador {
+    private List<publicacao> publicacoes;
+    private List<usuario> usuarios;
+    private static final String ARQUIVO_PUBLICACOES = "publicacoes.txt";
+    private static final String ARQUIVO_USUARIOS = "usuarios.txt";
+
+    public gerenciador() {
+        publicacoes = new ArrayList<>();
+        usuarios = new ArrayList<>();
+    }
+
+    // Métodos de gerenciamento de publicações
+    public void adicionarPublicacao(publicacao publicacao) throws dadosInvalidos {
+        publicacao.validar();
+        publicacoes.add(publicacao);
+    }
+
+    public double devolverPublicacao(usuario usuario, publicacao publicacao, int diasEmprestado) {
+        double multaTotal = 0.0;
+
+        // Calcula multa a cada 7 dias de atraso
+        if (diasEmprestado > 7) {
+            int diasAtraso = diasEmprestado - 7;
+            multaTotal = diasAtraso * 2.0; // R$2 por dia de atraso
+        }
+
+        usuario.getPublicacoesEmprestadas().remove(publicacao);
+        publicacao.devolver();
+
+        return multaTotal;
+    }
+
+    public publicacao buscarPublicacao(String isbn) {
+        return publicacoes.stream()
+                .filter(p -> p.obterDetalhesCompletos().contains(isbn))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Métodos de gerenciamento de usuários
+    public void adicionarUsuario(usuario usuario) throws dadosInvalidos {
+        usuario.validar();
+        usuarios.add(usuario);
+    }
+
+    public usuario buscarUsuario(String email) {
+        return usuarios.stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Métodos de persistência
+    public void salvarDados() throws IOException {
+        salvarPublicacoes();
+        salvarUsuarios();
+    }
+
+    private void salvarPublicacoes() throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ARQUIVO_PUBLICACOES))) {
+            for (publicacao publicacao : publicacoes) {
+                writer.write(publicacao.toString());
+                writer.newLine();
+            }
+        }
+    }
+
+    private void salvarUsuarios() throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ARQUIVO_USUARIOS))) {
+            for (usuario usuario : usuarios) {
+                writer.write(usuario.toString());
+                writer.newLine();
+            }
+        }
+    }
+
+    // Método de empréstimo
+    public void realizarEmprestimo(usuario usuario, publicacao publicacao) throws limiteEmprestimo {
+        usuario.emprestarPublicacao(publicacao);
+    }
+
+    // Menu principal
+    public void exibirMenu() {
+        Scanner scanner = new Scanner(System.in);
+        int opcao;
+
+        do {
+            System.out.println("\n--- BIBLIOTECA DIGITAL ---");
+            System.out.println("1. Adicionar Publicação");
+            System.out.println("2. Adicionar Usuário");
+            System.out.println("3. Realizar Empréstimo");
+            System.out.println("4. Salvar Dados");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opção: ");
+
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // Limpar buffer
+
+            try {
+                switch (opcao) {
+                    case 1:
+                        menuAdicionarPublicacao(scanner);
+                        break;
+                    case 2:
+                        menuAdicionarUsuario(scanner);
+                        break;
+                    case 3:
+                        menuRealizarEmprestimo(scanner);
+                        break;
+                    case 4:
+                        salvarDados();
+                        System.out.println("Dados salvos com sucesso!");
+                        break;
+
+                    case 0:
+                        System.out.println("Encerrando o sistema...");
+                        break;
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
+        } while (opcao != 0);
+    }
+
+    private void menuAdicionarPublicacao(Scanner scanner) throws dadosInvalidos {
+        System.out.println("\n--- ADICIONAR PUBLICAÇÃO ---");
+        System.out.print("Tipo (1-Livro, 2-Revista): ");
+        int tipo = scanner.nextInt();
+        scanner.nextLine(); // Limpar buffer
+
+        System.out.print("ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.print("ISBN: ");
+        String isbn = scanner.nextLine();
+        System.out.print("Ano Publicação: ");
+        int ano = scanner.nextInt();
+        scanner.nextLine(); // Limpar buffer
+
+        if (tipo == 1) {
+            System.out.print("Autor: ");
+            String autor = scanner.nextLine();
+            System.out.print("Número de Páginas: ");
+            int paginas = scanner.nextInt();
+
+            livro livro = new livro(id, nome, isbn, ano, autor, paginas);
+            adicionarPublicacao(livro);
+        } else if (tipo == 2) {
+            System.out.print("Editora: ");
+            String editora = scanner.nextLine();
+            System.out.print("Edição: ");
+            int edicao = scanner.nextInt();
+
+            revista revista = new revista(id, nome, isbn, ano, editora, edicao);
+            adicionarPublicacao(revista);
+        }
+    }
+
+    private void menuAdicionarUsuario(Scanner scanner) throws dadosInvalidos {
+        System.out.println("\n--- ADICIONAR USUÁRIO ---");
+        System.out.print("Tipo (1-Estudante, 2-Pesquisador): ");
+        int tipo = scanner.nextInt();
+        scanner.nextLine(); // Limpar buffer
+
+        System.out.print("ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+
+        if (tipo == 1) {
+            System.out.print("Instituição: ");
+            String instituicao = scanner.nextLine();
+            System.out.print("Ano de Matrícula: ");
+            int anoMatricula = scanner.nextInt();
+
+            estudante estudante = new estudante(id, nome, email, instituicao, anoMatricula);
+            adicionarUsuario(estudante);
+        } else if (tipo == 2) {
+            System.out.print("Área de Pesquisa: ");
+            String areaPesquisa = scanner.nextLine();
+            System.out.print("Projetos Ativos: ");
+            int projetosAtivos = scanner.nextInt();
+
+            pesquisador pesquisador = new pesquisador(id, nome, email, areaPesquisa, projetosAtivos);
+            adicionarUsuario(pesquisador);
+        }
+    }
+
+    private void menuRealizarEmprestimo(Scanner scanner) throws limiteEmprestimo {
+        System.out.println("\n--- REALIZAR EMPRÉSTIMO ---");
+        System.out.print("Email do Usuário: ");
+        String email = scanner.nextLine();
+        System.out.print("ISBN da Publicação: ");
+        String isbn = scanner.nextLine();
+
+        usuario usuario = buscarUsuario(email);
+        publicacao publicacao = buscarPublicacao(isbn);
+
+        if (usuario != null && publicacao != null) {
+            realizarEmprestimo(usuario, publicacao);
+            System.out.println("Empréstimo realizado com sucesso!");
+        } else {
+            System.out.println("Usuário ou publicação não encontrados.");
+        }
+    }
+
+    // Método main para iniciar o sistema
+    public static void main(String[] args) {
+        gerenciador biblioteca = new gerenciador();
+        biblioteca.exibirMenu();
+    }
+}
