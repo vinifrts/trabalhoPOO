@@ -1,0 +1,29 @@
+public class pesquisador extends usuario {
+    private String areaPesquisa;
+    private int projetosAtivos;
+
+    public pesquisador(String id, String nome, String email, String areaPesquisa, int projetosAtivos) {
+        super(id, nome, email);
+        this.areaPesquisa = areaPesquisa;
+        this.projetosAtivos = projetosAtivos;
+    }
+
+    @Override
+    public double calcularMulta() {
+        return getPublicacoesEmprestadas().size() * 2.0;
+    }
+
+    @Override
+    public String gerarRelatorio() {
+        return super.gerarRelatorio() + ", Área: " + areaPesquisa;
+    }
+
+    // Getters adicionados
+    public String getAreaPesquisa() {
+        return areaPesquisa;
+    }
+
+    public int getProjetosAtivos() {
+        return projetosAtivos;
+    }
+}
