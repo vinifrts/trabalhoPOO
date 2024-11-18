@@ -1,0 +1,4 @@
+public interface Pesquisavel {
+    boolean realizarPesquisa(String termoBusca);
+    String obterDetalhesCompletos();
+}
