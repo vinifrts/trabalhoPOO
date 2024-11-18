@@ -1,0 +1,5 @@
+public class dadosInvalidos extends Exception {
+    public dadosInvalidos(String mensagem) {
+        super(mensagem);
+    }
+}
