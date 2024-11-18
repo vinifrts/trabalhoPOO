@@ -1,0 +1,5 @@
+public interface Emprestavel {
+    boolean emprestar() throws limiteEmprestimo;
+    boolean devolver();
+    boolean verificarDisponibilidade();
+}
