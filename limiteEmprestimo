@@ -1,0 +1,5 @@
+public class limiteEmprestimo extends Exception {
+    public limiteEmprestimo(String mensagem) {
+        super(mensagem);
+    }
+}
