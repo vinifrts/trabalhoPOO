@@ -1,0 +1,29 @@
+public class estudante extends usuario {
+    private String instituicao;
+    private int anoMatricula;
+
+    public estudante(String id, String nome, String email, String instituicao, int anoMatricula) {
+        super(id, nome, email);
+        this.instituicao = instituicao;
+        this.anoMatricula = anoMatricula;
+    }
+
+    @Override
+    public double calcularMulta() {
+        return getPublicacoesEmprestadas().size() * 1.5;
+    }
+
+    @Override
+    public String gerarRelatorio() {
+        return super.gerarRelatorio() + ", Instituição: " + instituicao;
+    }
+
+    // Getters adicionados
+    public String getInstituicao() {
+        return instituicao;
+    }
+
+    public int getAnoMatricula() {
+        return anoMatricula;
+    }
+}
